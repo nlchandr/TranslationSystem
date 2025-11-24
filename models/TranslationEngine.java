@@ -6,7 +6,9 @@ import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TranslationEngine {
     private List<String> supportedLanguages;
@@ -16,12 +18,22 @@ public class TranslationEngine {
 
     private GlossaryManager glossaryManager;
 
+    private Map<String, String> iso = new HashMap<>();
+
     public TranslationEngine(List<String> supportedLanguages, String targetLanguage, GlossaryManager glossaryManager) {
         this.supportedLanguages = supportedLanguages;
         this.targetLanguage = targetLanguage;
         this.jobQueue = new ArrayList<>();
         this.glossaryManager = glossaryManager;
         detector = LanguageDetectorBuilder.fromAllLanguages().build();
+
+        //Supported Languages
+        iso.put("english", "en");
+        iso.put("french", "fr");
+        iso.put("german", "de");
+        iso.put("spanish", "es");
+        iso.put("chinese", "zh");
+        iso.put("dutch", "nl"); 
     }
 
 
@@ -70,10 +82,21 @@ public class TranslationEngine {
     }
 
     public String translateText(String text, String sourceLang, String targetLang) {
+        if (!supportedLanguages.contains(sourceLang.toLowerCase())) {
+            throw new IllegalArgumentException("Unsupported source language: " + sourceLang);
+        }
+
+        if (!supportedLanguages.contains(targetLang.toLowerCase())) {
+            throw new IllegalArgumentException("Unsupported target language: " + targetLang);
+        }
+
+        String source = iso.get(sourceLang.toLowerCase());
+        String target = iso.get(targetLang.toLowerCase());
+
         HttpResponse<JsonNode> response = Unirest.post("https://libretranslate.de/translate")
             .field("q", text)
-            .field("source", sourceLang)
-            .field("target", targetLang)
+            .field("source", source)
+            .field("target", target)
             .field("format", "text")
             .asJson();
 
