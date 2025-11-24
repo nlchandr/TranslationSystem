@@ -8,6 +8,8 @@ public class TouristUser {
     private String languageSelected;
     private List<TranslationJob> sessionHistory;
 
+    private int lastJobID = 0;
+
     public TouristUser(String deviceID, String languageSelected) {
         this.deviceID = deviceID;
         this.languageSelected = languageSelected;
@@ -40,5 +42,9 @@ public class TouristUser {
 
     public void deleteSessionHistory() {
         sessionHistory = new ArrayList<>();
+    }
+
+    public int generateJobID() {
+        return ++lastJobID;
     }
 }

@@ -11,15 +11,19 @@ import models.TranslationJob;
 
 public class TouristUserController {
     private TouristUserUI touristUI;
+
     private TouristUser touristUser;
     private GlossaryManager glossaryManager;
     private FeedbackManager feedbackManager;
 
-    public TouristUserController(TouristUserUI touristUI, TouristUser touristUser, GlossaryManager glossaryManager, FeedbackManager feedbackManager) {
+    private TranslationController translationController;
+
+    public TouristUserController(TouristUserUI touristUI, TouristUser touristUser, GlossaryManager glossaryManager, FeedbackManager feedbackManager, TranslationController translationController) {
         this.touristUI = touristUI;
         this.touristUser = touristUser;
         this.glossaryManager = glossaryManager;
         this.feedbackManager = feedbackManager;
+        this.translationController =translationController;
     }
 
     public void giveFeedback(String translationID, int rating, String comments) {
@@ -40,7 +44,10 @@ public class TouristUserController {
         touristUI.displayGlossary(list);
     }
 
-    public void getTranslation(String input) {
-
+    public void submitInput(String input, String targetLanguage) {
+        int jobID = touristUser.generateJobID();
+        TranslationJob job = translationController.translate(jobID, input, targetLanguage);
+        touristUser.addSessionHistory(job);
+        touristUI.displayTranslation(job.getJobResult());
     }
 }

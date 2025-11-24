@@ -15,19 +15,23 @@ public class TouristUserUI {
         this.touristController = touristController;
     }
 
+    public void submitInput(String input, String targetLanguage) {
+        touristController.submitInput(input, targetLanguage);
+    }
+
     public void displayTranslation(String output) {
         System.out.println("Translation: " + output);
     }
 
     public void displayGlossary(List<GlossaryTerm> terms) {
         for (GlossaryTerm term : terms) {
-            System.out.println(term);
+            term.getTermDetails();
         }
     }
 
     public void displaySessionHistory(List<TranslationJob> sessionList) {
         for (TranslationJob job : sessionList) {
-            System.out.println(job.showDetails());
+            job.getTranslationDetails();
         }
     }
 }
