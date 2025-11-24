@@ -25,19 +25,34 @@ public class GlossaryManager {
         return version;
     }
 
-    public void addTerm(String termName, String description, String targetLanguage) {
-        GlossaryTerm term = new GlossaryTerm(termName, description, targetLanguage);
+    public void addTerm(String termName, String description, String targetLanguage, List<GlossaryTerm> equivalentTerms) {
+        GlossaryTerm term = new GlossaryTerm(termName, description, targetLanguage, equivalentTerms);
         termList.add(term);
     }
 
-    public void updateTerm(String termName, String description, String targetLanguage) {
+    public void updateTerm(String termName, String description, String targetLanguage, List<GlossaryTerm> equivalentTerms) {
         for (GlossaryTerm term : termList) {
             if (term.getTermName().equals(termName)) {
                 term.setDescription(description);
                 term.setTargetLanguage(targetLanguage);
+                term.setEquivalentTerms(equivalentTerms);
                 return;
             }
         }
+    }
+
+    public String applyGlossary(String input, String targetLanguage) {
+        String output = input;
+
+        for (GlossaryTerm term : termList) {
+            for (GlossaryTerm equivalent : term.getEquivalentTerms()) {
+                if (equivalent.getTargetLanguage().equals(targetLanguage)) {
+                    output = output.replace(term.getTermName(), equivalent.getTermName());
+                }
+            }
+        }
+
+        return output;
     }
 
     public void resolveConflict() {
