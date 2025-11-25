@@ -1,9 +1,11 @@
 package models;
 import com.github.pemistahl.lingua.api.*;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.json.JSONObject;
+import kong.unirest.core.Unirest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +34,7 @@ public class TranslationEngine {
         iso.put("french", "fr");
         iso.put("german", "de");
         iso.put("spanish", "es");
-        iso.put("chinese", "zh");
+        iso.put("chinese", "zh-Hans"); //Simple Chinese
         iso.put("dutch", "nl"); 
     }
 
@@ -93,13 +95,44 @@ public class TranslationEngine {
         String source = iso.get(sourceLang.toLowerCase());
         String target = iso.get(targetLang.toLowerCase());
 
-        HttpResponse<JsonNode> response = Unirest.post("https://libretranslate.de/translate")
+        // 5. Call LibreTranslate from local host
+        String url = "http://localhost:5000/translate";
+
+        Unirest.config().setDefaultResponseEncoding("UTF-8");
+
+        HttpResponse<String> response = Unirest.post(url)
             .field("q", text)
             .field("source", source)
             .field("target", target)
             .field("format", "text")
-            .asJson();
+            .asString();
 
-        return response.getBody().getObject().getString("translatedText");
+        if (response.getStatus() != 200) {
+            throw new RuntimeException("Translation failed. HTTP " + response.getStatus());
+        }
+
+        String body = response.getBody();
+
+        // Gson parsing
+        JsonObject obj = JsonParser.parseString(body).getAsJsonObject();
+        return obj.get("translatedText").getAsString();
+
+        //Manual parsing
+        //if (response.getBody() != null && !response.getBody().isEmpty()) {
+            //String body = response.getBody();
+            //System.out.println("Status = " + response.getStatus());
+            //System.out.println("Raw response: " + response.getBody());
+            //int start = body.indexOf("\"translatedText\":\"");
+                //if (start != -1) {
+                    //start += "\"translatedText\":\"".length();
+                    //int end = body.indexOf("\"", start);
+                    //if (end != -1) {
+                        //return (body.substring(start, end));
+                    //}
+                //}
+        //} else {
+            //System.out.println("No body returned. Status: " + response.getStatus());
+        //}
+        //return null;
     }
 }
