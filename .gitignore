@@ -1,1 +1,6 @@
 lib/
+*.class
+/out/
+/bin/
+/target/
+/*.jar

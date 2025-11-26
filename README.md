@@ -35,3 +35,4 @@ Use 'git pull' to pull over the latest repository to your computer (probably nee
 - Quality moderation system
 - User feedback and rating system
 - Administrative oversight capabilities
+Use 'git pull' to pull over the latest repository to your computer (probably need to have git installed and already have cloned the repository onto your computer)
